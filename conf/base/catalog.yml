@@ -4,8 +4,8 @@
 # Link: https://docs.kedro.org/en/stable/data/data_catalog.html
 
 raw_data:
-  type: pandas.CSVDataset
-  filepath: data/01_raw/sample.csv
+  type: pandas.ParquetDataset
+  filepath: data/01_raw/data.parquet
 
 cleaned_data:
   type: pandas.ParquetDataset
@@ -38,11 +38,9 @@ metrics_baseline:
 ag_predictor:
   type: MemoryDataset
 
-
 ag_model:
   type: pickle.PickleDataset
   filepath: data/06_models/ag_production.pkl
-
 
 ag_metrics:
   type: json.JSONDataset
