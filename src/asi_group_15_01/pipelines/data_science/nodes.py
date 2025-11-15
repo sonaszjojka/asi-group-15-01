@@ -166,15 +166,21 @@ def train_autogluon(
         label=label_col,
         problem_type=params["problem_type"],
         eval_metric=params["eval_metric"],
-        path=params.get("model_path", "data/06_models/ag_tmp"),
+        path=params.get("model_path"),
     ).fit(
         train_data=train_df, time_limit=params["time_limit"], presets=params["presets"]
     )
 
     fit_summary = predictor.fit_summary()
-    train_time = fit_summary.get("train_time", 0)
+    info = predictor.info()
+    train_time = info.get("time_fit_training", 0)  # Czas w sekundach
 
-    wandb.log({"train_time_s": train_time})
+    wandb.log(
+        {
+            "train_time_s": train_time,
+            "num_models_trained": len(fit_summary.get("model_types", {})),
+        }
+    )
 
     return predictor
 
@@ -183,25 +189,25 @@ def evaluate_autogluon(predictor, X_test: pd.DataFrame, y_test: pd.DataFrame):
 
     test_df = X_test.copy()
     test_df[predictor.label] = y_test.values
-
-    leaderboard = predictor.leaderboard(test_df, silent=True)
     perf = predictor.evaluate(test_df, silent=True)
 
-    wandb.log(
-        {
-            "roc_auc": perf.get("roc_auc", perf.get("eval_metric", 0)),
-        }
-    )
+    wandb.log(perf)
 
-    return {"leaderboard": leaderboard.to_dict(), "performance": perf}
+    return {"performance": perf}
 
 
-def save_best_model(predictor):
+def save_best_model(predictor: TabularPredictor) -> TabularPredictor:
 
-    artifact = wandb.Artifact("ag_model", type="model")
-    artifact.add_file("data/06_models/ag_production.pkl")
-    wandb.log_artifact(artifact, aliases=["candidate", "latest"])
+    if wandb.run is not None:
+        best_model_name = predictor.get_model_best()
+        model_path = predictor.path
 
-    wandb.finish()
+        artifact = wandb.Artifact(
+            name="ag_model",
+            type="model",
+            description=f"Best AutoGluon model: {best_model_name}",
+        )
+        artifact.add_dir(model_path)
+        wandb.log_artifact(artifact, aliases=["candidate"])
 
     return predictor

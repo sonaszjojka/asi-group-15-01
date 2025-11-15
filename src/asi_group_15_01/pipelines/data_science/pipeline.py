@@ -8,8 +8,6 @@ from .nodes import (
     load_raw,
     basic_clean,
     train_test_split,
-    train_baseline,
-    evaluate,
     train_autogluon,
     evaluate_autogluon,
     save_best_model,
@@ -41,18 +39,6 @@ def create_pipeline(**kwargs) -> Pipeline:
                     "y_test",
                 ],
                 name="split",
-            ),
-            Node(
-                func=train_baseline,
-                inputs=["X_train", "y_train", "params:model"],
-                outputs="model_baseline",
-                name="train_baseline",
-            ),
-            Node(
-                func=evaluate,
-                inputs=["model_baseline", "X_test", "y_test"],
-                outputs="metrics_baseline",
-                name="evaluate",
             ),
             Node(
                 func=train_autogluon,
