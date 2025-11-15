@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 import wandb
+import random
+import torch
 from pathlib import Path
 
 from autogluon.tabular import TabularPredictor
@@ -142,12 +144,19 @@ def train_autogluon(
     X_train: pd.DataFrame, y_train: pd.DataFrame, params: dict, seed: int
 ):
 
-    import random
-    import torch
-
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
+
+    if wandb.run is not None:
+        wandb.finish()
+
+    wandb.init(
+        project="asi-group-15-01",
+        job_type="ag-train",
+        config={**params, "seed": seed},
+        reinit=True,
+    )
 
     train_df = X_train.copy()
     label_col = params["label"]
@@ -157,9 +166,28 @@ def train_autogluon(
         label=label_col,
         problem_type=params["problem_type"],
         eval_metric=params["eval_metric"],
-        path="data/06_models/ag_tmp",
+        path=params.get("model_path"),
     ).fit(
         train_data=train_df, time_limit=params["time_limit"], presets=params["presets"]
+    )
+
+    fit_summary = predictor.fit_summary()
+    info = predictor.info()
+    train_time = info.get("time_fit_training", 0)  # Czas w sekundach
+
+    wandb.log(
+        {
+            "train_time_s": train_time,
+            "num_models_trained": len(fit_summary.get("model_types", {})),
+        }
+    )
+    
+    predictor.refit_full() 
+    
+    model_to_keep = predictor.get_model_best()
+    predictor.delete_models(
+        models_to_keep=model_to_keep,
+        dry_run=False
     )
 
     return predictor
@@ -169,17 +197,25 @@ def evaluate_autogluon(predictor, X_test: pd.DataFrame, y_test: pd.DataFrame):
 
     test_df = X_test.copy()
     test_df[predictor.label] = y_test.values
+    perf = predictor.evaluate(test_df, silent=True)
 
-    leaderboard = predictor.leaderboard(test_df, silent=True)
-    perf = predictor.evaluate(test_df)
+    wandb.log(perf)
 
-    return {"leaderboard": leaderboard.to_dict(), "performance": perf}
+    return {"performance": perf}
 
 
-def save_best_model(predictor, output_path="data/06_models/ag_production.pkl"):
-    import pickle
+def save_best_model(predictor: TabularPredictor) -> TabularPredictor:
 
-    with open(output_path, "wb") as f:
-        pickle.dump(predictor, f)
+    if wandb.run is not None:
+        best_model_name = predictor.get_model_best()
+        model_path = predictor.path
+
+        artifact = wandb.Artifact(
+            name="ag_model",
+            type="model",
+            description=f"Best AutoGluon model: {best_model_name}",
+        )
+        artifact.add_dir(model_path)
+        wandb.log_artifact(artifact, aliases=["candidate"])
 
     return predictor

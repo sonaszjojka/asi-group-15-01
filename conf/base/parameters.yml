@@ -14,10 +14,11 @@ model:
   n_jobs: -1
 
 autogluon:
-    time_limit: 120
-    presets: "medium_quality_faster_train"
-    problem_type: "binary"
-    label: "income_encoded"
-    eval_metric: "roc_auc"
+  time_limit: 7200
+  presets: "best_quality"
+  problem_type: "binary"
+  label: "income_encoded"
+  eval_metric: "average_precision"
+  model_path: "data/06_models/ag_production"
 
 seed: 21
