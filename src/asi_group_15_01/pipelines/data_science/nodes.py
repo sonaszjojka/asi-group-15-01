@@ -181,6 +181,14 @@ def train_autogluon(
             "num_models_trained": len(fit_summary.get("model_types", {})),
         }
     )
+    
+    predictor.refit_full() 
+    
+    model_to_keep = predictor.get_model_best()
+    predictor.delete_models(
+        models_to_keep=model_to_keep,
+        dry_run=False
+    )
 
     return predictor
 
