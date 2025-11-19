@@ -3,6 +3,7 @@ import numpy as np
 import wandb
 import random
 import torch
+import shutil
 from pathlib import Path
 
 from autogluon.tabular import TabularPredictor
@@ -151,6 +152,10 @@ def train_autogluon(
     if wandb.run is not None:
         wandb.finish()
 
+    model_path = Path(params.get("model_path"))
+    if model_path.exists():
+        shutil.rmtree(model_path)
+
     wandb.init(
         project="asi-group-15-01",
         job_type="ag-train",
@@ -168,7 +173,9 @@ def train_autogluon(
         eval_metric=params["eval_metric"],
         path=params.get("model_path"),
     ).fit(
-        train_data=train_df, time_limit=params["time_limit"], presets=params["presets"]
+        train_data=train_df,
+        time_limit=params["time_limit"],
+        presets=params["presets"],
     )
 
     fit_summary = predictor.fit_summary()
@@ -181,14 +188,11 @@ def train_autogluon(
             "num_models_trained": len(fit_summary.get("model_types", {})),
         }
     )
-    
-    predictor.refit_full() 
-    
+
+    predictor.refit_full()
+
     model_to_keep = predictor.get_model_best()
-    predictor.delete_models(
-        models_to_keep=model_to_keep,
-        dry_run=False
-    )
+    predictor.delete_models(models_to_keep=model_to_keep, dry_run=False)
 
     return predictor
 
