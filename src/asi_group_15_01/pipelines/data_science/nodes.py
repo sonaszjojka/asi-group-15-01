@@ -4,6 +4,7 @@ import wandb
 import random
 import torch
 import shutil
+import time
 from pathlib import Path
 
 from autogluon.tabular import TabularPredictor
@@ -174,8 +175,10 @@ def train_autogluon(
         path=params.get("model_path"),
     ).fit(
         train_data=train_df,
-        time_limit=params["time_limit"],
-        presets=params["presets"],
+        time_limit=params.get("time_limit"),
+        presets=params.get("presets"),
+        hyperparameters=params.get("hyperparameters"),
+        fit_weighted_ensemble=params.get("fit_weighted_ensemble", True),
     )
 
     fit_summary = predictor.fit_summary()
@@ -197,15 +200,38 @@ def train_autogluon(
     return predictor
 
 
-def evaluate_autogluon(predictor, X_test: pd.DataFrame, y_test: pd.DataFrame):
+def evaluate_autogluon(
+    predictor: TabularPredictor, X_test: pd.DataFrame, y_test: pd.DataFrame
+):
 
     test_df = X_test.copy()
     test_df[predictor.label] = y_test.values
+
+    # Warm-up run
+    predictor.predict(X_test.head(1))
+
+    prediction_times = []
+    num_runs = 10
+    for _ in range(num_runs):
+        start_time = time.perf_counter()
+        predictor.predict(X_test)
+        end_time = time.perf_counter()
+        prediction_times.append(end_time - start_time)
+
+    avg_prediction_time = sum(prediction_times) / len(prediction_times)
+
+    # --- Performance metrics ---
     perf = predictor.evaluate(test_df, silent=True)
 
-    wandb.log(perf)
+    metrics_to_log = {
+        **perf,
+        "avg_prediction_time_test_set_s": avg_prediction_time,
+    }
 
-    return {"performance": perf}
+    if wandb.run is not None:
+        wandb.log(metrics_to_log)
+
+    return metrics_to_log
 
 
 def save_best_model(predictor: TabularPredictor) -> TabularPredictor:
