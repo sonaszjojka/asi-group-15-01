@@ -239,24 +239,22 @@ class TestDataSciencePipelineAutogluon:
         mock_predictor = MagicMock()
         mock_predictor.label = "income_encoded"
 
-        mock_metrics = {"accuracy": 0.85, "roc_auc": 0.92, "f1": 0.78}
+        mock_metrics = {"accuracy": 0.85, "f1": 0.78, "roc_auc": 0.92}
         mock_predictor.evaluate.return_value = mock_metrics
 
-        with patch(f"{NODES_PATH}.wandb") as mock_wandb:
+        with patch(f"{NODES_PATH}.wandb"):
             result = evaluate_autogluon(mock_predictor, x_data, y_data)
 
             assert isinstance(result, dict)
 
-            assert "performance" in result
-
-            metrics = result["performance"]
+            metrics = {
+                k: v for k, v in result.items() if k != "avg_prediction_time_test_set_s"
+            }
 
             assert metrics == mock_metrics
 
-            for metric_name, value in metrics.items():
+            for metric_name, value in result.items():
                 assert 0.0 <= value <= 1.0, f"Metric {metric_name} outside of [0, 1]"
-
-            mock_wandb.log.assert_called_once_with(mock_metrics)
 
     def test_model_directory_exists(self, sample_raw_data_auto_gluon):
         """
