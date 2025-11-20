@@ -248,10 +248,12 @@ def evaluate_autogluon(
     }
 
     if wandb.run is not None:
-        wandb.log({
-            **metrics_to_log,
-            "best_model_name": predictor.get_model_best(),
-        })
+        wandb.log(
+            {
+                **metrics_to_log,
+                "best_model_name": predictor.get_model_best(),
+            }
+        )
 
     return metrics_to_log
 
