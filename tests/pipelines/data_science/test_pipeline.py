@@ -11,11 +11,16 @@ https://docs.pytest.org/en/latest/getting-started.html
 import pandas as pd
 import numpy as np
 import pytest
+from pathlib import Path
+from unittest.mock import MagicMock, patch
 
 from src.asi_group_15_01.pipelines.data_science.nodes import (
     basic_clean,
     train_test_split,
+    evaluate_autogluon,
 )
+
+NODES_PATH = "src.asi_group_15_01.pipelines.data_science.nodes"
 
 
 # --- Fixtures for testing ---
@@ -207,3 +212,56 @@ class TestDataSciencePipeline:
         assert (
             "income_encoded" in y_test.columns
         ), "y_test does not contain the target column."
+
+
+@pytest.fixture
+def sample_raw_data_auto_gluon():
+    """
+    Creates a sample DataFrames for testing.
+    """
+
+    x_data = pd.DataFrame(
+        {"feature1": [1, 2, 3, 4, 5], "feature2": [0.5, 0.1, 0.9, 0.2, 0.4]}
+    )
+    y_data = pd.DataFrame({"income_encoded": [0, 0, 1, 0, 1]})
+
+    return x_data, y_data
+
+
+class TestDataSciencePipelineAutogluon:
+    def test_evaluate_autogluon(self, sample_raw_data_auto_gluon):
+        """
+        Tests autogluon evaluation
+        """
+
+        x_data, y_data = sample_raw_data_auto_gluon
+
+        mock_predictor = MagicMock()
+        mock_predictor.label = "income_encoded"
+
+        mock_metrics = {"accuracy": 0.85, "f1": 0.78, "roc_auc": 0.92}
+        mock_predictor.evaluate.return_value = mock_metrics
+
+        with patch(f"{NODES_PATH}.wandb"):
+            result = evaluate_autogluon(mock_predictor, x_data, y_data)
+
+            assert isinstance(result, dict)
+
+            metrics = {
+                k: v for k, v in result.items() if k != "avg_prediction_time_test_set_s"
+            }
+
+            assert metrics == mock_metrics
+
+            for metric_name, value in result.items():
+                assert 0.0 <= value <= 1.0, f"Metric {metric_name} outside of [0, 1]"
+
+    def test_model_directory_exists(self, sample_raw_data_auto_gluon):
+        """
+        Tests if directory exists.
+        """
+
+        model_path = Path("data/06_models")
+
+        assert model_path.exists(), f"Directory {model_path} does not exist."
+        assert model_path.is_dir(), f"Path {model_path} is not a directory."
