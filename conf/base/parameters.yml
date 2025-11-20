@@ -14,11 +14,33 @@ model:
   n_jobs: -1
 
 autogluon:
-  time_limit: 7200
-  presets: "best_quality"
+  time_limit: 1200
+  presets: "high_quality"
   problem_type: "binary"
   label: "income_encoded"
   eval_metric: "average_precision"
   model_path: "data/06_models/ag_production"
+  seed: ${seed}
+  hyperparameters:
+    GBM: {}
+    CAT: {}
+    XGB: {}
 
 seed: 21
+
+wandb:
+  enabled: True
+  project: "asi-group-15-01"
+
+artifacts:
+  cleaned_data:
+    name: "clean_data"
+    type: "dataset"
+    path: "data/02_interim/clean.parquet"
+  ag_model:
+    name: "ag_model"
+    type: "model"
+    path: ${autogluon.model_path}
+    aliases:
+      - "latest"
+      - "candidate"
