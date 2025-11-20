@@ -23,3 +23,20 @@ autogluon:
   seed: ${seed}
 
 seed: 21
+
+wandb:
+  enabled: True
+  project: "asi-group-15-01"
+
+artifacts:
+  cleaned_data:
+    name: "clean_data"
+    type: "dataset"
+    path: "data/02_interim/clean.parquet"
+  ag_model:
+    name: "ag_model"
+    type: "model"
+    path: ${autogluon.model_path}
+    aliases:
+      - "latest"
+      - "candidate"

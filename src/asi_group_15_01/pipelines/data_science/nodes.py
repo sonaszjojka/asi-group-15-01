@@ -13,7 +13,19 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import average_precision_score, f1_score, roc_auc_score
 
 
-def load_raw(raw_csv: str) -> pd.DataFrame:
+def start_wandb_run(wandb_params: dict) -> bool:
+    """Initializes a W&B run if enabled in the parameters."""
+    if wandb_params.get("enabled", False):
+        wandb.init(
+            project=wandb_params.get("project"),
+            name=wandb_params.get("name"),
+            config=wandb_params.get("config"),
+        )
+        return True
+    return False
+
+
+def load_raw(raw_csv: str, wandb_started: bool) -> pd.DataFrame:
     """Load raw data from a CSV file.
 
     Args:
@@ -72,6 +84,22 @@ def basic_clean(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+def log_artifact(data, artifact_config: dict):
+    """Logs a file or directory as a W&B artifact and returns the data."""
+    if wandb.run:
+        path = Path(artifact_config["path"])
+        artifact = wandb.Artifact(
+            name=artifact_config["name"],
+            type=artifact_config["type"],
+        )
+        if path.is_dir():
+            artifact.add_dir(local_path=str(path))
+        elif path.is_file():
+            artifact.add_file(local_path=str(path))
+        wandb.log_artifact(artifact, aliases=artifact_config.get("aliases", []))
+    return data
+
+
 def train_test_split(
     df: pd.DataFrame, split_params: dict
 ) -> tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
@@ -108,12 +136,8 @@ def train_baseline(X_train: pd.DataFrame, y_train: pd.Series, model_params: dict
 
     model.fit(X_train, y_train)
 
-    wandb.init(
-        project="asi-group-15-01",
-        job_type="train",
-        config=model_params,
-        reinit=True,
-    )
+    if wandb.run:
+        wandb.config.update(model_params)
 
     return model
 
@@ -133,11 +157,12 @@ def evaluate(model, X_test: pd.DataFrame, y_test: pd.DataFrame) -> pd.DataFrame:
         "roc_auc": roc_auc_score(y_test, y_proba),
     }
 
-    artifact = wandb.Artifact("model_baseline", type="model")
-    artifact.add_file(Path("data/06_models/model_baseline.pkl"))
-    wandb.log_artifact(artifact)
+    if wandb.run:
+        artifact = wandb.Artifact("model_baseline", type="model")
+        artifact.add_file(Path("data/06_models/model_baseline.pkl"))
+        wandb.log_artifact(artifact)
 
-    wandb.log(metrics)
+        wandb.log(metrics)
 
     return metrics
 
@@ -150,19 +175,12 @@ def train_autogluon(
     np.random.seed(seed)
     torch.manual_seed(seed)
 
-    if wandb.run is not None:
-        wandb.finish()
-
     model_path = Path(params.get("model_path"))
     if model_path.exists():
         shutil.rmtree(model_path)
 
-    wandb.init(
-        project="asi-group-15-01",
-        job_type="ag-train",
-        config={**params, "seed": seed},
-        reinit=True,
-    )
+    if wandb.run:
+        wandb.config.update(params)
 
     train_df = X_train.copy()
     label_col = params["label"]
@@ -185,12 +203,13 @@ def train_autogluon(
     info = predictor.info()
     train_time = info.get("time_fit_training", 0)  # Czas w sekundach
 
-    wandb.log(
-        {
-            "train_time_s": train_time,
-            "num_models_trained": len(fit_summary.get("model_types", {})),
-        }
-    )
+    if wandb.run:
+        wandb.log(
+            {
+                "train_time_s": train_time,
+                "num_models_trained": len(fit_summary.get("model_types", {})),
+            }
+        )
 
     predictor.refit_full()
 
@@ -235,17 +254,4 @@ def evaluate_autogluon(
 
 
 def save_best_model(predictor: TabularPredictor) -> TabularPredictor:
-
-    if wandb.run is not None:
-        best_model_name = predictor.get_model_best()
-        model_path = predictor.path
-
-        artifact = wandb.Artifact(
-            name="ag_model",
-            type="model",
-            description=f"Best AutoGluon model: {best_model_name}",
-        )
-        artifact.add_dir(model_path)
-        wandb.log_artifact(artifact, aliases=["candidate"])
-
     return predictor
