@@ -197,3 +197,6 @@ data/*
 data/**/.gitkeep
 data/**/README.md
 !data/01_raw/sample.csv
+
+# Db SQLite files
+*.db

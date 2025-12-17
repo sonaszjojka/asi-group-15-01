@@ -1,11 +1,15 @@
 import os
 import pandas as pd
 import wandb
+import json
+import datetime as dt
+from datetime import timezone
 from typing import Optional
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 from autogluon.tabular import TabularPredictor
+from sqlalchemy import create_engine, text
 
 from ..asi_group_15_01.pipelines.data_science.nodes import basic_clean
 
@@ -14,6 +18,8 @@ MODEL_PATH = os.getenv(
 )
 MODEL_VERSION = "local"
 PREDICTOR: Optional[TabularPredictor] = None
+
+engine = create_engine(os.getenv("DATABASE_URL", "sqlite:///predictions.db"))
 
 
 def load_model():
@@ -36,12 +42,44 @@ def load_model():
         return None, None
 
 
+def save_prediction(payload: dict, prediction: float | int, model_version: str):
+    """
+    Saves prediction to the database.
+    """
+    try:
+        with engine.begin() as conn:
+            conn.execute(
+                text(
+                    "INSERT INTO predictions(ts, payload, prediction, model_version) VALUES (:ts, :payload, :pred, :ver)"
+                ),
+                {
+                    "ts": dt.datetime.now(timezone.utc).isoformat(),
+                    "payload": json.dumps(payload),
+                    "pred": float(prediction),
+                    "ver": model_version,
+                },
+            )
+    except Exception as e:
+        print(f"Failed to save prediction to DB: {e}")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """
-    Prepare singleton.
+    Prepare singleton and database.
     """
     global PREDICTOR, MODEL_VERSION
+
+    try:
+        with engine.begin() as conn:
+            conn.execute(
+                text(
+                    "CREATE TABLE IF NOT EXISTS predictions (id INTEGER PRIMARY KEY AUTOINCREMENT, ts TEXT, payload TEXT, prediction REAL, model_version TEXT)"
+                )
+            )
+    except Exception as e:
+        print(f"Failed to initialize DB: {e}")
+
     PREDICTOR, version = load_model()
     if version:
         MODEL_VERSION = version
@@ -160,6 +198,8 @@ def predict(payload: Features):
 
     y_pred = PREDICTOR.predict(df).iloc[0]
     y_proba = PREDICTOR.predict_proba(df).iloc[0][1]
+
+    save_prediction(input_data, y_proba, MODEL_VERSION)
 
     class_mapping = {0: "<=50K", 1: ">50K"}
 
