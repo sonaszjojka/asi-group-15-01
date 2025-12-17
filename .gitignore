@@ -187,6 +187,7 @@ mlruns/*
 
 # W&B
 wandb/
+artifacts/
 
 # Data (nie ładujemy pełbych danych, tylko małe próbki danych)
 data/*

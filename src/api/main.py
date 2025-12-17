@@ -1,6 +1,8 @@
 import os
 import pandas as pd
+import wandb
 from typing import Optional
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 from autogluon.tabular import TabularPredictor
@@ -14,32 +16,44 @@ MODEL_VERSION = "local"
 PREDICTOR: Optional[TabularPredictor] = None
 
 
+def load_model():
+    """
+    Loads model from W&B artifact (Production) or falls back to local.
+    """
+    try:
+        api = wandb.Api()
+        artifact = api.artifact(
+            "s28044-polish-japanese-academy-of-information-technology/asi-group-15-01/ag_model:production",
+            type="model",
+        )  # TODO: move to env?
+        model_path = artifact.download()
+        model = TabularPredictor.load(model_path)
+        return model, artifact.version
+    except Exception as e:
+        print(f"Failed to load from W&B: {e}")
+        if os.path.exists(MODEL_PATH):
+            return TabularPredictor.load(MODEL_PATH), "local"
+        return None, None
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """
+    Prepare singleton.
+    """
+    global PREDICTOR, MODEL_VERSION
+    PREDICTOR, version = load_model()
+    if version:
+        MODEL_VERSION = version
+    yield
+
+
 app = FastAPI(
     title="Income Prediction API",
     description="API for income prediction (<=50K or >50K) based on demographic data.",
     version="0.1.0",
+    lifespan=lifespan,
 )
-
-
-def load_model():
-    """
-    Loads model.
-    """
-
-    if os.path.exists(MODEL_PATH):
-        return TabularPredictor.load(MODEL_PATH)
-    else:
-        return None
-
-
-@app.on_event("startup")
-async def on_startup():
-    """
-    Prepare singleton.
-    """
-
-    global PREDICTOR
-    PREDICTOR = load_model()
 
 
 # Pydantic scheme
@@ -96,7 +110,7 @@ class Prediction(BaseModel):
     API response model.
     """
 
-    prediction: int
+    prediction: str
     probability: float
     model_version: str
 
@@ -147,8 +161,10 @@ def predict(payload: Features):
     y_pred = PREDICTOR.predict(df).iloc[0]
     y_proba = PREDICTOR.predict_proba(df).iloc[0][1]
 
+    class_mapping = {0: "<=50K", 1: ">50K"}
+
     return {
-        "prediction": int(y_pred),
+        "prediction": class_mapping.get(int(y_pred), "Unknown"),
         "probability": float(y_proba),
         "model_version": MODEL_VERSION,
     }
