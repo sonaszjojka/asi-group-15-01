@@ -31,3 +31,8 @@ namespaces = false
 
 [tool.kedro_telemetry]
 project_id = "52e9be4e85a64a39a637bb60cc5d1489"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_tests.py"]

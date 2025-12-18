@@ -82,11 +82,17 @@ Wersja danych, na których model był trenowany, również jest zapisana jako [a
 
 # Uruchom
 uvicorn src.api.main:app --reload --port 8000
- 
+
 # Test health
 curl http://127.0.0.1:8000/healthz
- 
-# Predykcja
-curl -X POST http://127.0.0.1:8000/predict \
-     -H "Content-Type: application/json" \
-     -d '{"feature_num": 2.9, "feature_cat": "B"}'
+
+# Predykcja Power Shell
+```bash
+curl.exe -X POST http://127.0.0.1:8000/predict `
+ -H "Content-Type: application/json" `
+ -d '{\"age\": 39, \"workclass\": \"State-gov\", \"fnlwgt\": 77516, \"education\": \"Bachelors\", \"education-num\": 13, \"marital-status\": \"Never-married\", \"occupation\": \"Adm-clerical\", \"relationship\": \"Not-in-family\", \"race\": \"White\", \"sex\": \"Male\", \"capital-gain\": 2174, \"capital-loss\": 0, \"hours-per-week\": 40, \"native-country\": \"United-States\"}'
+```
+# Predykcja Linux
+```bash
+curl -X 'POST' 'http://127.0.0.1:8000/predict' -H 'accept: application/json' -H 'Content-Type: application/json' -d '{ "age": 39, "workclass": "State-gov", "fnlwgt": 77516, "education": "Bachelors", "education-num": 13, "marital-status": "Never-married", "occupation": "Adm-clerical", "relationship": "Not-in-family", "race": "White", "sex": "Male", "capital-gain": 2174, "capital-loss": 0, "hours-per-week": 40, "native-country": "United-States" }'
+```

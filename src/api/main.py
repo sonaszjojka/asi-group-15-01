@@ -7,7 +7,7 @@ from datetime import timezone
 from typing import Optional
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from autogluon.tabular import TabularPredictor
 from sqlalchemy import create_engine, text
 from src.api.config import settings
@@ -17,7 +17,7 @@ from ..asi_group_15_01.pipelines.data_science.nodes import basic_clean
 MODEL_PATH = settings.MODEL_PATH
 MODEL_VERSION = settings.MODEL_VERSION
 PREDICTOR: Optional[TabularPredictor] = None
-ARTIFACT_NAME = settings.MODEL_NAME
+ARTIFACT_NAME = settings.ARTIFACT_NAME
 
 engine = create_engine(settings.DATABASE_URL)
 
@@ -117,13 +117,9 @@ class Features(BaseModel):
     hours_per_week: int = Field(..., alias="hours-per-week")
     native_country: str = Field(..., alias="native-country")
 
-    class Config:
-        """
-        Model example configuration.
-        """
-
-        populate_by_name = True
-        json_schema_extra = {
+    model_config = ConfigDict(
+        populate_by_name=True,
+        json_schema_extra={
             "example": {
                 "age": 39,
                 "workclass": "State-gov",
@@ -140,7 +136,8 @@ class Features(BaseModel):
                 "hours-per-week": 40,
                 "native-country": "United-States",
             }
-        }
+        },
+    )
 
 
 class Prediction(BaseModel):
