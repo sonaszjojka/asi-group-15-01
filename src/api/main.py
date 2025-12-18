@@ -10,16 +10,16 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 from autogluon.tabular import TabularPredictor
 from sqlalchemy import create_engine, text
+from src.api.config import settings
 
 from ..asi_group_15_01.pipelines.data_science.nodes import basic_clean
 
-MODEL_PATH = os.getenv(
-    "MODEL_PATH", "data/06_models/ag_production/ds_sub_fit/sub_fit_ho"
-)
-MODEL_VERSION = "local"
+MODEL_PATH = settings.MODEL_PATH
+MODEL_VERSION = settings.MODEL_VERSION
 PREDICTOR: Optional[TabularPredictor] = None
+ARTIFACT_NAME = settings.MODEL_NAME
 
-engine = create_engine(os.getenv("DATABASE_URL", "sqlite:///predictions.db"))
+engine = create_engine(settings.DATABASE_URL)
 
 
 def load_model():
@@ -29,9 +29,9 @@ def load_model():
     try:
         api = wandb.Api()
         artifact = api.artifact(
-            "s28044-polish-japanese-academy-of-information-technology/asi-group-15-01/ag_model:production",
+            settings.ARTIFACT_NAME,
             type="model",
-        )  # TODO: move to env?
+        )
         model_path = artifact.download()
         model = TabularPredictor.load(model_path)
         return model, artifact.version

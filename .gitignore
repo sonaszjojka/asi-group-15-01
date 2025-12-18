@@ -12,7 +12,6 @@ dist/
 
 # Envs / secrets
 .env
-.env.*
 *.env
 
 # jeśli ktoś pracuje na Macu
