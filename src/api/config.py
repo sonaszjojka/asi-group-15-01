@@ -1,4 +1,5 @@
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
 
 class Settings(BaseSettings):
     MODEL_PATH: str | None = None
@@ -7,8 +8,7 @@ class Settings(BaseSettings):
     WANDB_API_KEY: str | None = None
     MODEL_VERSION: str | None = None
 
-    class Config:
-        env_file = ".env"
+    model_config = SettingsConfigDict(env_file=".env")
+
 
 settings = Settings()
-
