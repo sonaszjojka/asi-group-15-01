@@ -79,3 +79,14 @@ W związku z powyższymi wynikami, jako nasz finalny model wybieramy ten wytreno
 Najlepsza wersja modelu została zapisana jako artefakt w [Weights & Biases](https://wandb.ai/s28044-polish-japanese-academy-of-information-technology/asi-group-15-01/artifacts/model/ag_model/v46) oraz w lokalnym katalogu w `data/06_models/ag_production`.
 
 Wersja danych, na których model był trenowany, również jest zapisana jako [artefakt W&B](https://wandb.ai/s28044-polish-japanese-academy-of-information-technology/asi-group-15-01/artifacts/dataset/clean_data/v0), co zapewnia pełną odtwarzalność wyników.
+
+# Uruchom
+uvicorn src.api.main:app --reload --port 8000
+ 
+# Test health
+curl http://127.0.0.1:8000/healthz
+ 
+# Predykcja
+curl -X POST http://127.0.0.1:8000/predict \
+     -H "Content-Type: application/json" \
+     -d '{"feature_num": 2.9, "feature_cat": "B"}'
