@@ -26,6 +26,7 @@ dependencies:
       - kedro-datasets
       - kedro-viz
       - autogluon==1.1.0
+      - xgboost==1.7.6
       - fastapi
       - uvicorn
       - sqlalchemy
