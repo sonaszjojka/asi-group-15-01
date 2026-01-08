@@ -18,24 +18,26 @@ WORKCLASS = [
     "Never-worked",
 ]
 
-EDUCATION = [
-    "Preschool",
-    "1st-4th",
-    "5th-6th",
-    "7th-8th",
-    "9th",
-    "10th",
-    "11th",
-    "12th",
-    "HS-grad",
-    "Some-college",
-    "Assoc-voc",
-    "Assoc-acdm",
-    "Bachelors",
-    "Masters",
-    "Prof-school",
-    "Doctorate",
-]
+EDUCATION_MAP = {
+    "Preschool": 1,
+    "1st-4th": 2,
+    "5th-6th": 3,
+    "7th-8th": 4,
+    "9th": 5,
+    "10th": 6,
+    "11th": 7,
+    "12th": 8,
+    "HS-grad": 9,
+    "Some-college": 10,
+    "Assoc-voc": 11,
+    "Assoc-acdm": 12,
+    "Bachelors": 13,
+    "Masters": 14,
+    "Prof-school": 15,
+    "Doctorate": 16,
+}
+
+EDUCATION = list(EDUCATION_MAP.keys())
 
 MARITAL_STATUS = [
     "Never-married",
@@ -120,6 +122,7 @@ if st.button("Predict"):
         "workclass": workclass,
         "fnlwgt": fnlwgt,
         "education": education,
+        "education-num": EDUCATION_MAP[education],
         "marital-status": marital_status,
         "occupation": occupation,
         "relationship": relationship,
