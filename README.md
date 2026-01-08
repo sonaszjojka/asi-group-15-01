@@ -80,19 +80,24 @@ Najlepsza wersja modelu została zapisana jako artefakt w [Weights & Biases](htt
 
 Wersja danych, na których model był trenowany, również jest zapisana jako [artefakt W&B](https://wandb.ai/s28044-polish-japanese-academy-of-information-technology/asi-group-15-01/artifacts/dataset/clean_data/v0), co zapewnia pełną odtwarzalność wyników.
 
-# Uruchom
+## Uruchom
+
 uvicorn src.api.main:app --reload --port 8000
 
-# Test health
-curl http://127.0.0.1:8000/healthz
+## Test health
 
-# Predykcja Power Shell
+curl <http://127.0.0.1:8000/healthz>
+
+## Predykcja Power Shell
+
 ```bash
 curl.exe -X POST http://127.0.0.1:8000/predict `
  -H "Content-Type: application/json" `
  -d '{\"age\": 39, \"workclass\": \"State-gov\", \"fnlwgt\": 77516, \"education\": \"Bachelors\", \"education-num\": 13, \"marital-status\": \"Never-married\", \"occupation\": \"Adm-clerical\", \"relationship\": \"Not-in-family\", \"race\": \"White\", \"sex\": \"Male\", \"capital-gain\": 2174, \"capital-loss\": 0, \"hours-per-week\": 40, \"native-country\": \"United-States\"}'
 ```
-# Predykcja Linux
+
+## Predykcja Linux
+
 ```bash
 curl -X 'POST' 'http://127.0.0.1:8000/predict' -H 'accept: application/json' -H 'Content-Type: application/json' -d '{ "age": 39, "workclass": "State-gov", "fnlwgt": 77516, "education": "Bachelors", "education-num": 13, "marital-status": "Never-married", "occupation": "Adm-clerical", "relationship": "Not-in-family", "race": "White", "sex": "Male", "capital-gain": 2174, "capital-loss": 0, "hours-per-week": 40, "native-country": "United-States" }'
 ```
