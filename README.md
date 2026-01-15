@@ -101,15 +101,21 @@ curl.exe -X POST http://127.0.0.1:8000/predict `
 ```bash
 curl -X 'POST' 'http://127.0.0.1:8000/predict' -H 'accept: application/json' -H 'Content-Type: application/json' -d '{ "age": 39, "workclass": "State-gov", "fnlwgt": 77516, "education": "Bachelors", "education-num": 13, "marital-status": "Never-married", "occupation": "Adm-clerical", "relationship": "Not-in-family", "race": "White", "sex": "Male", "capital-gain": 2174, "capital-loss": 0, "hours-per-week": 40, "native-country": "United-States" }'
 ```
+
 ## Docker quickstart
+
 ```bash
 docker compose --build
 ```
-# UI
+
+### UI
+
 ```bash
-streamlit run src/ui/app.py 
+streamlit run src/ui/app.py
 ```
-# DB
+
+### DB
+
 ```bash
  docker exec -it asi-group-15-01-db-1 psql -U app_user -d app_db -c "select * from predictions limit 100;"
 ```
