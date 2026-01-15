@@ -29,4 +29,6 @@ dependencies:
       - xgboost==1.7.6
       - fastapi
       - uvicorn
+      - pydantic-settings
       - sqlalchemy
+      - streamlit

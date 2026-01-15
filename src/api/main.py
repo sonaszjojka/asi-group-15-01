@@ -74,7 +74,7 @@ async def lifespan(app: FastAPI):
         with engine.begin() as conn:
             conn.execute(
                 text(
-                    "CREATE TABLE IF NOT EXISTS predictions (id INTEGER PRIMARY KEY AUTOINCREMENT, ts TEXT, payload TEXT, prediction REAL, model_version TEXT)"
+                    "CREATE TABLE IF NOT EXISTS predictions (id SERIAL PRIMARY KEY, ts TEXT, payload TEXT, prediction REAL, model_version TEXT)"
                 )
             )
     except Exception as e:

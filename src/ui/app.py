@@ -8,48 +8,90 @@ st.title("Income Prediction (ML Demo)")
 st.header("Input features")
 
 WORKCLASS = [
-    "Private", "Self-emp-not-inc", "Self-emp-inc",
-    "Federal-gov", "Local-gov", "State-gov",
-    "Without-pay", "Never-worked"
+    "Private",
+    "Self-emp-not-inc",
+    "Self-emp-inc",
+    "Federal-gov",
+    "Local-gov",
+    "State-gov",
+    "Without-pay",
+    "Never-worked",
 ]
 
-EDUCATION = [
-    "Preschool", "1st-4th", "5th-6th", "7th-8th",
-    "9th", "10th", "11th", "12th",
-    "HS-grad", "Some-college", "Assoc-voc",
-    "Assoc-acdm", "Bachelors", "Masters",
-    "Prof-school", "Doctorate"
-]
+EDUCATION_MAP = {
+    "Preschool": 1,
+    "1st-4th": 2,
+    "5th-6th": 3,
+    "7th-8th": 4,
+    "9th": 5,
+    "10th": 6,
+    "11th": 7,
+    "12th": 8,
+    "HS-grad": 9,
+    "Some-college": 10,
+    "Assoc-voc": 11,
+    "Assoc-acdm": 12,
+    "Bachelors": 13,
+    "Masters": 14,
+    "Prof-school": 15,
+    "Doctorate": 16,
+}
+
+EDUCATION = list(EDUCATION_MAP.keys())
 
 MARITAL_STATUS = [
-    "Never-married", "Married-civ-spouse",
-    "Divorced", "Separated", "Widowed",
-    "Married-spouse-absent", "Married-AF-spouse"
+    "Never-married",
+    "Married-civ-spouse",
+    "Divorced",
+    "Separated",
+    "Widowed",
+    "Married-spouse-absent",
+    "Married-AF-spouse",
 ]
 
 OCCUPATION = [
-    "Tech-support", "Craft-repair", "Other-service",
-    "Sales", "Exec-managerial", "Prof-specialty",
-    "Handlers-cleaners", "Machine-op-inspct",
-    "Adm-clerical", "Farming-fishing",
-    "Transport-moving", "Priv-house-serv",
-    "Protective-serv", "Armed-Forces"
+    "Tech-support",
+    "Craft-repair",
+    "Other-service",
+    "Sales",
+    "Exec-managerial",
+    "Prof-specialty",
+    "Handlers-cleaners",
+    "Machine-op-inspct",
+    "Adm-clerical",
+    "Farming-fishing",
+    "Transport-moving",
+    "Priv-house-serv",
+    "Protective-serv",
+    "Armed-Forces",
 ]
 
 RELATIONSHIP = [
-    "Wife", "Own-child", "Husband",
-    "Not-in-family", "Other-relative", "Unmarried"
+    "Wife",
+    "Own-child",
+    "Husband",
+    "Not-in-family",
+    "Other-relative",
+    "Unmarried",
 ]
 
-RACE = [
-    "White", "Black", "Asian-Pac-Islander",
-    "Amer-Indian-Eskimo", "Other"
-]
+RACE = ["White", "Black", "Asian-Pac-Islander", "Amer-Indian-Eskimo", "Other"]
 
 NATIVE_COUNTRY = [
-    "United-States", "Mexico", "Philippines", "Germany",
-    "Canada", "India", "England", "China", "Japan",
-    "South", "Cuba", "Italy", "Poland", "Columbia"
+    "United-States",
+    "Mexico",
+    "Philippines",
+    "Germany",
+    "Canada",
+    "India",
+    "England",
+    "China",
+    "Japan",
+    "South",
+    "Cuba",
+    "Italy",
+    "Poland",
+    "Columbia",
 ]
 
 
@@ -58,7 +100,9 @@ workclass = st.selectbox("Workclass", WORKCLASS, index=WORKCLASS.index("State-go
 fnlwgt = st.number_input("Final weight (fnlwgt)", min_value=0, value=77516)
 education = st.selectbox("Education", EDUCATION, index=EDUCATION.index("Bachelors"))
 marital_status = st.selectbox("Marital status", MARITAL_STATUS)
-occupation = st.selectbox("Occupation", OCCUPATION, index=OCCUPATION.index("Adm-clerical"))
+occupation = st.selectbox(
+    "Occupation", OCCUPATION, index=OCCUPATION.index("Adm-clerical")
+)
 relationship = st.selectbox("Relationship", RELATIONSHIP)
 race = st.selectbox("Race", RACE)
 sex = st.selectbox("Sex", ["Male", "Female"])
@@ -78,6 +122,7 @@ if st.button("Predict"):
         "workclass": workclass,
         "fnlwgt": fnlwgt,
         "education": education,
+        "education-num": EDUCATION_MAP[education],
         "marital-status": marital_status,
         "occupation": occupation,
         "relationship": relationship,

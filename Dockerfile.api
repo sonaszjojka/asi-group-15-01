@@ -1,0 +1,32 @@
+FROM python:3.10-slim
+
+WORKDIR /app
+
+# For compatibility with autogluon
+RUN apt-get update && apt-get install -y \
+    libgomp1 \
+    build-essential \
+    python3-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY pyproject.toml ./
+COPY src ./src
+COPY data/06_models ./data/06_models
+
+RUN pip install --no-cache-dir \
+    uvicorn \
+    fastapi \
+    pydantic-settings \
+    sqlalchemy \
+    psycopg2-binary \
+    pandas \
+    wandb \
+    autogluon==1.1.0 \
+    xgboost==1.7.6 \
+    kedro
+
+ENV PYTHONPATH=/app/src
+
+EXPOSE 8000
+
+CMD ["uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "8000"]

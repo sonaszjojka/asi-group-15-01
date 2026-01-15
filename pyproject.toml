@@ -7,7 +7,7 @@ requires-python = ">=3.9"
 name = "asi_group_15_01"
 readme = "README.md"
 dynamic = [ "version",]
-dependencies = [ "ipython>=8.10", "jupyterlab>=3.0", "notebook", "kedro~=1.0.0",]
+dependencies = [ "ipython>=8.10", "jupyterlab>=3.0", "notebook", "kedro~=1.0.0", "pydantic-settings",]
 
 [project.scripts]
 asi-group-15-01 = "asi_group_15_01.__main__:main"
