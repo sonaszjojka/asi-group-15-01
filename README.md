@@ -105,7 +105,7 @@ curl -X 'POST' 'http://127.0.0.1:8000/predict' -H 'accept: application/json' -H 
 ## Docker quickstart
 
 ```bash
-docker compose --build
+docker compose up --build
 ```
 
 ### UI

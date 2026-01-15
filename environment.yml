@@ -32,3 +32,4 @@ dependencies:
       - pydantic-settings
       - sqlalchemy
       - streamlit
+      - psycopg2-binary
