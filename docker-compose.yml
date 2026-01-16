@@ -17,7 +17,7 @@ services:
       context: .
       dockerfile: Dockerfile.api
     environment:
-      DATABASE_URL: ${DATABASE_URL}
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
       MODEL_PATH: ${MODEL_PATH}
       WANDB_API_KEY: ${WANDB_API_KEY}
       ARTIFACT_NAME: ${ARTIFACT_NAME}

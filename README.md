@@ -104,17 +104,23 @@ curl -X 'POST' 'http://127.0.0.1:8000/predict' -H 'accept: application/json' -H 
 
 ## Docker quickstart
 
+Do zbudowania obrazu Docker oraz uruchomienia aplikacji w oparciu o plik `docker-compose.yml`, należy użyć:
+
 ```bash
 docker compose up --build
 ```
 
 ### UI
 
+W celu uruchomienia lokalnie jedynie aplikacji UI, należy użyc:
+
 ```bash
 streamlit run src/ui/app.py
 ```
 
 ### DB
+
+Poniższe polecenie pozwala na szybkie podejrzenie dokonanych predykcji:
 
 ```bash
  docker exec -it asi-group-15-01-db-1 psql -U app_user -d app_db -c "select * from predictions limit 100;"
