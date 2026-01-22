@@ -89,9 +89,9 @@ Przewidywania są przybliżone, poglądowe i nigdy nie powinny być wykorzystywa
 
 ## Versioning
 
-- **W&B Run:** <https://wandb.ai/s28044-polish-japanese-academy-of-information-technology/asi-group-15-01/runs/0jru3flo?nw=nwusers27523>
+- **W&B Run:** <https://wandb.ai/s28044-polish-japanese-academy-of-information-technology/asi-group-15-01/runs/0jru3flo>
 - **Model Artifact:** <https://wandb.ai/s28044-polish-japanese-academy-of-information-technology/asi-group-15-01/artifacts/model/ag_model/v46/overview>
-- **Code:** d41c2a29bededf384cb63ca2d1c02502ae953820
-- **Data:** `data/02_interim/clean.parquet` lub <https://wandb.ai/s28044-polish-japanese-academy-of-information-technology/asi-group-15-01/artifacts/dataset/clean_data/v0>
+- **Code:** cc2e4777f49db996324180dab922a0376a3a8a01
+- **Data:** `data/02_interim/clean.parquet` lub <https://wandb.ai/s28044-polish-japanese-academy-of-information-technology/asi-group-15-01/artifacts/dataset/clean_data/v3>
 - **Environment:** Python 3.10, AutoGluon 1.1.0, Kedro, scikit-learn, W&B
 - **Link do dashboardu z porównaniem:** <https://wandb.ai/s28044-polish-japanese-academy-of-information-technology/asi-group-15-01/workspace>
