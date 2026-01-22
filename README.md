@@ -90,6 +90,8 @@ curl <http://127.0.0.1:8000/healthz>
 
 ## Predykcja Power Shell
 
+Poniższe polecenie wysyła żądanie POST do lokalnego API z przykładowymi danymi osoby i zwraca predykcję, czy dana osoba zarabia powyżej 50 tys. dolarów rocznie.
+
 ```bash
 curl.exe -X POST http://127.0.0.1:8000/predict `
  -H "Content-Type: application/json" `
@@ -97,6 +99,8 @@ curl.exe -X POST http://127.0.0.1:8000/predict `
 ```
 
 ## Predykcja Linux
+
+Analogiczne polecenie dla systemów Linux/macOS – różni się składnią cudzysłowów i znaków ucieczki.
 
 ```bash
 curl -X 'POST' 'http://127.0.0.1:8000/predict' -H 'accept: application/json' -H 'Content-Type: application/json' -d '{ "age": 39, "workclass": "State-gov", "fnlwgt": 77516, "education": "Bachelors", "education-num": 13, "marital-status": "Never-married", "occupation": "Adm-clerical", "relationship": "Not-in-family", "race": "White", "sex": "Male", "capital-gain": 2174, "capital-loss": 0, "hours-per-week": 40, "native-country": "United-States" }'
@@ -125,3 +129,15 @@ Poniższe polecenie pozwala na szybkie podejrzenie dokonanych predykcji:
 ```bash
  docker exec -it asi-group-15-01-db-1 psql -U app_user -d app_db -c "select * from predictions limit 100;"
 ```
+
+### Cloud demo
+
+Aplikacja jest również wdrożona w chmurze Google Cloud Run, co umożliwia testowanie modelu bez lokalnej instalacji.
+
+API: https://api-406517093314.europe-central2.run.app
+
+UI: https://ui-406517093314.europe-central2.run.app
+
+**Jak diagnozować?**
+
+curl https://api-406517093314.europe-central2.run.app/healthz
