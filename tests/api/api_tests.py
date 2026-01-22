@@ -1,14 +1,29 @@
+import pytest
 from fastapi.testclient import TestClient
 from unittest.mock import patch, MagicMock
 from sqlalchemy import create_engine, text
+from sqlalchemy.exc import OperationalError
 from src.api.main import app
 from src.api.config import settings
 
 client = TestClient(app)
 
 
-def test_healthz():
-    response = client.get("/healthz")
+def _is_db_available():
+    """Check if database is available."""
+    if not settings.DATABASE_URL:
+        return False
+    try:
+        engine = create_engine(settings.DATABASE_URL)
+        with engine.connect() as conn:
+            conn.execute(text("SELECT 1"))
+        return True
+    except OperationalError:
+        return False
+
+
+def test_health():
+    response = client.get("/health")
     assert response.status_code == 200
     assert response.json()["status"] == "ok"
 
@@ -18,6 +33,7 @@ def test_prediction_validation_error():
     assert response.status_code == 422
 
 
+@pytest.mark.skipif(not _is_db_available(), reason="Database not available")
 @patch("src.api.main.PREDICTOR")
 def test_predict_integration_db_count(mock_predictor):
     mock_predictor.predict.return_value = MagicMock(iloc=[0])

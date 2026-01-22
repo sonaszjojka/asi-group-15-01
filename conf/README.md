@@ -2,13 +2,13 @@
 
 This folder should be used to store configuration files used by Kedro or by separate tools.
 
-This file can be used to provide users with instructions for how to reproduce local configuration with their own credentials. You can edit the file however you like, but you may wish to retain the information below and add your own section in the [Instructions](#Instructions) section.
+This file can be used to provide users with instructions for how to reproduce local configuration with their own credentials. You can edit the file however you like, but you may wish to retain the information below and add your own section in the [Instructions](#instructions) section.
 
 ## Local configuration
 
 The `local` folder should be used for configuration that is either user-specific (e.g. IDE configuration) or protected (e.g. security keys).
 
-> *Note:* Please do not check in any local configuration to version control.
+> _Note:_ Please do not check in any local configuration to version control.
 
 ## Base configuration
 
@@ -17,9 +17,6 @@ The `base` folder is for shared configuration, such as non-sensitive and project
 WARNING: Please do not put access credentials in the base configuration folder.
 
 ## Instructions
-
-
-
 
 ## Need help?
 

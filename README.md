@@ -86,7 +86,7 @@ uvicorn src.api.main:app --reload --port 8000
 
 ## Test health
 
-curl <http://127.0.0.1:8000/healthz>
+curl <http://127.0.0.1:8000/health>
 
 ## Predykcja Power Shell
 
@@ -130,14 +130,37 @@ Poniższe polecenie pozwala na szybkie podejrzenie dokonanych predykcji:
  docker exec -it asi-group-15-01-db-1 psql -U app_user -d app_db -c "select * from predictions limit 100;"
 ```
 
-### Cloud demo
+## Cloud demo
 
 Aplikacja jest również wdrożona w chmurze Google Cloud Run, co umożliwia testowanie modelu bez lokalnej instalacji.
 
-API: https://api-406517093314.europe-central2.run.app
+API: <https://api-406517093314.europe-central2.run.app>
 
-UI: https://ui-406517093314.europe-central2.run.app
+UI: <https://ui-406517093314.europe-central2.run.app>
 
 **Jak diagnozować?**
 
-curl https://api-406517093314.europe-central2.run.app/healthz
+curl <https://api-406517093314.europe-central2.run.app/health>
+
+## Monitorowanie i logi w Google Cloud
+
+### Sprawdzanie logów
+
+Logi aplikacji wdrożonej na Google Cloud Run można przeglądać przez Google Cloud Conosle:
+
+1. Wejdź na [Google Cloud Console](https://console.cloud.google.com/)
+2. Przejdź do **Cloud Run**
+3. Wybierz odpowiednią usługę (`api` lub `ui`)
+4. Kliknij zakładkę **Logs**
+
+### Monitorowanie użycia usługi
+
+Wskaźniki dla aplikacji wdrożonej na Google Cloud Run można przeglądać przez Google Cloud Conosle:
+
+1. W konsoli Cloud Run wybierz usługę
+2. Przejdź do zakładki **Metrics**
+3. Przykładowe dostępne wskźniki:
+   - **Request count** – liczba żądań do usługi
+   - **Request latency** – czas odpowiedzi
+   - **Container instance count** – liczba aktywnych instancji
+   - **Billable container instance time** – czas rozliczeniowy

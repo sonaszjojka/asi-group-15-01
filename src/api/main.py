@@ -164,8 +164,8 @@ class Prediction(BaseModel):
 # Endpoints
 
 
-@app.get("/healthz")
-def healthz():
+@app.get("/health")
+def health():
     """
     Endpoint for Health Check.
     """
