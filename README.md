@@ -125,3 +125,13 @@ Poniższe polecenie pozwala na szybkie podejrzenie dokonanych predykcji:
 ```bash
  docker exec -it asi-group-15-01-db-1 psql -U app_user -d app_db -c "select * from predictions limit 100;"
 ```
+
+### Cloud demo
+
+API: https://api-406517093314.europe-central2.run.app
+
+UI: https://ui-406517093314.europe-central2.run.app
+
+**Jak diagnozować?**
+
+curl https://api-406517093314.europe-central2.run.app/healthz

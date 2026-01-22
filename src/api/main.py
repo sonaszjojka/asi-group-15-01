@@ -11,6 +11,7 @@ from pydantic import BaseModel, Field, ConfigDict
 from autogluon.tabular import TabularPredictor
 from sqlalchemy import create_engine, text
 from src.api.config import settings
+from fastapi.middleware.cors import CORSMiddleware
 
 from ..asi_group_15_01.pipelines.data_science.nodes import basic_clean
 
@@ -91,6 +92,16 @@ app = FastAPI(
     description="API for income prediction (<=50K or >50K) based on demographic data.",
     version="0.1.0",
     lifespan=lifespan,
+)
+
+origins = ["*"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 
