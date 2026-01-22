@@ -7,8 +7,8 @@ from src.api.config import settings
 client = TestClient(app)
 
 
-def test_healthz():
-    response = client.get("/healthz")
+def test_health():
+    response = client.get("/health")
     assert response.status_code == 200
     assert response.json()["status"] == "ok"
 
