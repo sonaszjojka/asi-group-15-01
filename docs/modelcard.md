@@ -1,6 +1,6 @@
 # Model Card
 
-### Problem & Use-case
+## Problem & Use-case
 
 **Kontekst:**
 Średniej wielkości firma analityczna HR, **WorkForceSight**, opracowuje dashboard wspierający podejmowanie decyzji dla badaczy rynku pracy i analityków polityki społecznej. Celem jest dostarczenie wglądu w trendy dystrybucji dochodów w różnych grupach demograficznych, co pomoże organizacjom lepiej zrozumieć dynamikę siły roboczej.
@@ -10,12 +10,14 @@ Klienci WorkForceSight często proszą o narzędzia eksploracyjne, które pozwol
 
 **Zamierzone zastosowanie (Intended Use):**
 Model został zaprojektowany, aby:
+
 - Identyfikować grupy osób, które z większym prawdopodobieństwem zarabiają powyżej 50 tys. USD rocznie.
 - Umożliwić badaczom przeprowadzanie analiz typu „co-jeśli” (np. jak wykształcenie lub liczba przepracowanych godzin wpływają na przewidywany dochód).
 - Służyć jako przykład edukacyjny (teaching case) w zakresie interpretowalności ML i analizy sprawiedliwości (fairness).
 - Wspierać wewnętrzne symulacje — **nie** służy do podejmowania zautomatyzowanych decyzji.
 
 **Użytkownicy docelowi:**
+
 - Ekonomiści rynku pracy
 - Badacze HR
 - Analitycy polityki społecznej
@@ -27,7 +29,7 @@ Przewidywania są przybliżone, poglądowe i nigdy nie powinny być wykorzystywa
 
 ---
 
-### Data (źródło, licencja, rozmiar, PII=brak)
+## Data (źródło, licencja, rozmiar, PII=brak)
 
 - **Źródło:** <https://archive.ics.uci.edu/dataset/2/adult>
 - **Licencja:** CC BY 4.0 — pozwala na udostępnianie i adaptację z uznaniem autorstwa.
@@ -36,16 +38,15 @@ Przewidywania są przybliżone, poglądowe i nigdy nie powinny być wykorzystywa
 
 ---
 
-### Metrics (główne + pomocnicze, zbiór testowy)
+## Metrics (główne + pomocnicze, zbiór testowy)
 
 - **Główna metryka:** Average Precision (AP)
 - **Metryki pomocnicze:** Accuracy (Dokładność), Precision (Precyzja), Recall (Czułość), F1-Score, AUC-ROC
 - **Ewaluacja:** Przeprowadzona na zbiorze testowym wygenerowanym przez pipeline Kedro.
-  *(Tutaj wstaw rzeczywiste wyniki, gdy będą dostępne)*
 
 ---
 
-### Limitations & Risks (Ograniczenia i Ryzyka)
+## Limitations & Risks (Ograniczenia i Ryzyka)
 
 - **Przestarzały zbiór danych:**
   Zbiór „Adult” odzwierciedla warunki na rynku pracy w USA w latach 90. Przewidywania mogą nie przekładać się na współczesne stanowiska, wynagrodzenia czy warunki ekonomiczne.
@@ -67,7 +68,7 @@ Przewidywania są przybliżone, poglądowe i nigdy nie powinny być wykorzystywa
 
 ---
 
-### Ethics & Risk (Etyka i Ryzyko)
+## Ethics & Risk (Etyka i Ryzyko)
 
 - **Kwestie sprawiedliwości (Fairness):**
   Atrybuty wrażliwe (płeć, rasa, stan cywilny) mogą zawierać istniejące nierówności społeczne. Model może odzwierciedlać lub wzmacniać historyczne uprzedzenia obecne w zbiorze danych.
@@ -79,18 +80,18 @@ Przewidywania są przybliżone, poglądowe i nigdy nie powinny być wykorzystywa
   Użytkownicy mogą błędnie interpretować predykcje modelu jako nakazowe, a nie opisowe. Jasna komunikacja jest kluczowa, aby uniknąć mylących wniosków.
 
 - **Strategie mitygacji (zapobiegania):**
-    - Ograniczenie zastosowania modelu wyłącznie do celów edukacyjnych i eksploracyjnych.
-    - Zapewnienie dokumentacji podkreślającej zakaz użycia produkcyjnego i decyzyjnego.
-    - Unikanie eksponowania cech wrażliwych w zautomatyzowanych procesach, chyba że jest to wymagane do analizy fairness.
-    - Wymaganie od użytkowników potwierdzenia, że model nie jest przeznaczony do rzeczywistych wdrożeń.
+  - Ograniczenie zastosowania modelu wyłącznie do celów edukacyjnych i eksploracyjnych.
+  - Zapewnienie dokumentacji podkreślającej zakaz użycia produkcyjnego i decyzyjnego.
+  - Unikanie eksponowania cech wrażliwych w zautomatyzowanych procesach, chyba że jest to wymagane do analizy fairness.
+  - Wymaganie od użytkowników potwierdzenia, że model nie jest przeznaczony do rzeczywistych wdrożeń.
 
 ---
 
-### Versioning
+## Versioning
 
-- **W&B Run:** https://wandb.ai/s28044-polish-japanese-academy-of-information-technology/asi-group-15-01/runs/0jru3flo?nw=nwusers27523
-- **Model Artifact:** https://wandb.ai/s28044-polish-japanese-academy-of-information-technology/asi-group-15-01/artifacts/model/ag_model/v46/overview
+- **W&B Run:** <https://wandb.ai/s28044-polish-japanese-academy-of-information-technology/asi-group-15-01/runs/0jru3flo?nw=nwusers27523>
+- **Model Artifact:** <https://wandb.ai/s28044-polish-japanese-academy-of-information-technology/asi-group-15-01/artifacts/model/ag_model/v46/overview>
 - **Code:** d41c2a29bededf384cb63ca2d1c02502ae953820
-- **Data:** `data/02_interim/clean.parquet` lub https://wandb.ai/s28044-polish-japanese-academy-of-information-technology/asi-group-15-01/artifacts/dataset/clean_data/v0
+- **Data:** `data/02_interim/clean.parquet` lub <https://wandb.ai/s28044-polish-japanese-academy-of-information-technology/asi-group-15-01/artifacts/dataset/clean_data/v0>
 - **Environment:** Python 3.10, AutoGluon 1.1.0, Kedro, scikit-learn, W&B
-- **Link do dashboardu z porównaniem:** https://wandb.ai/s28044-polish-japanese-academy-of-information-technology/asi-group-15-01/workspace
+- **Link do dashboardu z porównaniem:** <https://wandb.ai/s28044-polish-japanese-academy-of-information-technology/asi-group-15-01/workspace>

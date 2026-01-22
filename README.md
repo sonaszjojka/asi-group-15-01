@@ -86,7 +86,7 @@ uvicorn src.api.main:app --reload --port 8000
 
 ## Test health
 
-curl <http://127.0.0.1:8000/healthz>
+curl <http://127.0.0.1:8000/health>
 
 ## Predykcja Power Shell
 
@@ -134,13 +134,13 @@ Poniższe polecenie pozwala na szybkie podejrzenie dokonanych predykcji:
 
 Aplikacja jest również wdrożona w chmurze Google Cloud Run, co umożliwia testowanie modelu bez lokalnej instalacji.
 
-API: https://api-406517093314.europe-central2.run.app
+API: <https://api-406517093314.europe-central2.run.app>
 
-UI: https://ui-406517093314.europe-central2.run.app
+UI: <https://ui-406517093314.europe-central2.run.app>
 
 **Jak diagnozować?**
 
-curl https://api-406517093314.europe-central2.run.app/healthz
+curl <https://api-406517093314.europe-central2.run.app/health>
 
 ## Monitorowanie i logi w Google Cloud
 
@@ -159,10 +159,12 @@ Logi aplikacji wdrożonej na Google Cloud Run można przeglądać na kilka sposo
 
 1. Wejdź na [Logs Explorer](https://console.cloud.google.com/logs)
 2. W polu filtra wpisz:
-   ```
+
+   ```yml
    resource.type="cloud_run_revision"
    resource.labels.service_name="api"
    ```
+
 3. Możesz zawęzić wyniki dodając filtry czasowe lub poziom ważności (`severity`)
 
 **3. Przez gcloud CLI:**
