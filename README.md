@@ -130,7 +130,7 @@ Poniższe polecenie pozwala na szybkie podejrzenie dokonanych predykcji:
  docker exec -it asi-group-15-01-db-1 psql -U app_user -d app_db -c "select * from predictions limit 100;"
 ```
 
-### Cloud demo
+## Cloud demo
 
 Aplikacja jest również wdrożona w chmurze Google Cloud Run, co umożliwia testowanie modelu bez lokalnej instalacji.
 
@@ -141,3 +141,85 @@ UI: https://ui-406517093314.europe-central2.run.app
 **Jak diagnozować?**
 
 curl https://api-406517093314.europe-central2.run.app/healthz
+
+## Monitorowanie i logi w Google Cloud
+
+### Sprawdzanie logów
+
+Logi aplikacji wdrożonej na Google Cloud Run można przeglądać na kilka sposobów:
+
+**1. Przez konsolę Google Cloud (GUI):**
+
+1. Wejdź na [Google Cloud Console](https://console.cloud.google.com/)
+2. Przejdź do **Cloud Run** w menu nawigacyjnym
+3. Wybierz odpowiednią usługę (`api` lub `ui`)
+4. Kliknij zakładkę **Logs** w górnym menu
+
+**2. Przez Cloud Logging (Logs Explorer):**
+
+1. Wejdź na [Logs Explorer](https://console.cloud.google.com/logs)
+2. W polu filtra wpisz:
+   ```
+   resource.type="cloud_run_revision"
+   resource.labels.service_name="api"
+   ```
+3. Możesz zawęzić wyniki dodając filtry czasowe lub poziom ważności (`severity`)
+
+**3. Przez gcloud CLI:**
+
+```bash
+# Logi dla usługi API
+gcloud logging read "resource.type=cloud_run_revision AND resource.labels.service_name=api" --limit 50 --format="table(timestamp, textPayload)"
+
+# Logi dla usługi UI
+gcloud logging read "resource.type=cloud_run_revision AND resource.labels.service_name=ui" --limit 50 --format="table(timestamp, textPayload)"
+
+# Logi z ostatniej godziny
+gcloud logging read "resource.type=cloud_run_revision AND resource.labels.service_name=api AND timestamp>=\"$(date -u -d '1 hour ago' '+%Y-%m-%dT%H:%M:%SZ')\"" --limit 100
+```
+
+### Monitorowanie użycia usługi
+
+**1. Metryki w Cloud Run:**
+
+1. W konsoli Cloud Run wybierz usługę
+2. Przejdź do zakładki **Metrics**
+3. Dostępne metryki:
+   - **Request count** – liczba żądań do usługi
+   - **Request latency** – czas odpowiedzi
+   - **Container instance count** – liczba aktywnych instancji
+   - **Billable container instance time** – czas rozliczeniowy
+
+**2. Cloud Monitoring:**
+
+1. Wejdź na [Cloud Monitoring](https://console.cloud.google.com/monitoring)
+2. Utwórz **Dashboard** z wybranymi metrykami
+3. Skonfiguruj **Alerts** dla krytycznych progów (np. wysoka latencja, błędy 5xx)
+
+**3. Przykładowe zapytania do monitorowania przez CLI:**
+
+```bash
+# Status usługi
+gcloud run services describe api --region europe-central2 --format="table(status.conditions)"
+
+# Lista rewizji z ich stanem
+gcloud run revisions list --service api --region europe-central2
+
+# Szczegóły użycia zasobów
+gcloud run services describe api --region europe-central2 --format="yaml(spec.template.spec.containers)"
+```
+
+### Ustawianie alertów
+
+Aby otrzymywać powiadomienia o problemach z usługą:
+
+1. Przejdź do [Cloud Monitoring > Alerting](https://console.cloud.google.com/monitoring/alerting)
+2. Kliknij **Create Policy**
+3. Wybierz metrykę (np. `cloud_run_revision/request_count` z filtrem `response_code_class=5xx`)
+4. Ustaw próg i kanał powiadomień (email, Slack, PagerDuty)
+
+### Przydatne linki
+
+- [Cloud Run Logs](https://console.cloud.google.com/run) – bezpośredni dostęp do logów usług
+- [Logs Explorer](https://console.cloud.google.com/logs) – zaawansowane przeglądanie logów
+- [Cloud Monitoring Dashboards](https://console.cloud.google.com/monitoring/dashboards) – wizualizacja metryk
